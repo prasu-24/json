@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Cities</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .city-card {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .city-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .city-details {
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #555;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="citiesContainer"></div>
+
+<script>
+  const citiesContainer = document.getElementById('citiesContainer');
+
+  fetch('https://api.npoint.io/7bbd3a59c401f616bb89')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.places && data.places.length > 0) {
+        // Use Set to store unique city names
+        const uniqueCities = new Set();
+
+        data.places.forEach(city => {
+          // Check if the city name is not already displayed
+          if (!uniqueCities.has(city.name)) {
+            uniqueCities.add(city.name);
+
+            const cityCard = document.createElement('div');
+            cityCard.classList.add('city-card');
+
+            const cityImage = document.createElement('img');
+            cityImage.classList.add('city-image');
+            cityImage.src = city.image;
+            cityImage.alt = city.name;
+
+            const cityName = document.createElement('h2');
+            cityName.classList.add('city-name');
+            cityName.textContent = city.name;
+
+            const cityInfo = document.createElement('p');
+            cityInfo.classList.add('city-info');
+            cityInfo.textContent = city.info;
+
+            cityCard.appendChild(cityImage);
+            cityCard.appendChild(cityName);
+            cityCard.appendChild(cityInfo);
+
+            citiesContainer.appendChild(cityCard);
+          }
+        });
+      } else {
+        console.error('Invalid data structure: Missing or empty "places" array in data:', data);
+      }
+    })
+    .catch(error => {
+      console.error('There was a problem fetching the data:', error);
+    });
+</script>
+
+</body>
+</html>
